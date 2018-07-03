@@ -12,7 +12,7 @@ Xiaolin Zhang, Yunchao Wei, Jiashi Feng, Yi Yang, Thomas Huang
 
 The model suggested by the paper consists of `backbone` as a feature extractor and two `classifiers`  in a sequential order. 
 
-![ACoL Architecture](/Users/jastills/personal_projects/adversarial_complementary_learning/assets/ACoL_approach.png)
+![ACoL Architecture](assets/ACoL_approach.png)
 
 The two classifiers are made up of a `1x1 convolution layer` that shrinks the feature channel (i.e. 2048) into the output channel of label size C  (i.e. 4 or 5) and a global average pooling layer. Then the classifier produces a `class activation map` using the cth weight of the 1x1 conv layer. 
 
@@ -20,7 +20,7 @@ Class activation map reveals the most discriminative region related to the targe
 
 All in all, the second classifier complements the first classifier's decision to generate a more holistic class activation map.
 
-![ACoL_vs_CAM](/Users/jastills/personal_projects/adversarial_complementary_learning/assets/ACoL_vs_CAM.png)
+![ACoL_vs_CAM](assets/ACoL_vs_CAM.png)
 
 
 
@@ -59,13 +59,13 @@ In my own PyTorch implementation in this repo, 'p' refers to the normal classifi
 I ran my own experiments with various hyper parameters like pretrained models (resent50, 101, 152), weight decay, delta, etc, and here's what I found.
 
 - p and pn converged well when pp's val loss exploded in the later epochs. The validation losses of p and pn were nearly the same as their training losses.
-  ![pp_metrics](/Users/jastills/personal_projects/adversarial_complementary_learning/assets/pp_metrics.png)
+  ![pp_metrics](assets/pp_metrics.png)
 - pp with delta 0.6 generated poor heat maps that cover most of the image.
 - p (basic resnet + 1x1 conv + GAP) produced good CAM but the first classifier result was not as accurate as pn 0.9.
 - In terms of classification accuracy, the best p, pn, pp models were more or less the same level (77~79%)
 - From my own point of view, pn with delta 0.9 produces the best CAM output. The below is some of the cherry picked results from the validation images.
 
-![experiment_result](/Users/jastills/personal_projects/adversarial_complementary_learning/assets/experiment_result.png)
+![experiment_result](assets/experiment_result.png)
 
 
 
