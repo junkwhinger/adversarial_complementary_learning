@@ -1,5 +1,8 @@
+import time, copy, os
 import argparse
 import sys
+import warnings
+warnings.filterwarnings('ignore')
 
 import torch
 import torch.nn as nn
@@ -14,13 +17,7 @@ from acol import ACoL
 from utils import produce_intermediate_result
 
 
-import warnings
-
-warnings.filterwarnings('ignore')
-
 torch.manual_seed(42)
-
-import time, copy, os
 
 
 def restCrossEtropyLoss(X, y, device):
@@ -34,6 +31,7 @@ def restCrossEtropyLoss(X, y, device):
     loss = -torch.log(numer / denom).mean()
 
     return loss
+
 
 def run(args):
 
@@ -54,12 +52,14 @@ def run(args):
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
     }
-    data_dir = "../input/"
+    data_dir = args.input_path
     image_datasets = {x: vdatasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
                       for x in ['train', 'validation']}
 
-    dataloaders = {'train': torch.utils.data.DataLoader(image_datasets['train'], batch_size=args.batch_size, shuffle=True),
-                   'validation': torch.utils.data.DataLoader(image_datasets['validation'], batch_size=32, shuffle=False)}
+    dataloaders = {'train': torch.utils.data.DataLoader(image_datasets['train'],
+                                                        batch_size=args.batch_size, shuffle=True),
+                   'validation': torch.utils.data.DataLoader(image_datasets['validation'],
+                                                             batch_size=args.batch_size, shuffle=False)}
 
     dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'validation']}
     nb_classes = len(image_datasets['train'].classes)
@@ -138,7 +138,6 @@ def run(args):
                         # pred = first classifier(p) output
                         _, preds = torch.max(outputs[0], 1)
 
-
                         # calculate loss
                         total_loss = torch.tensor([0.0]).to(device)
                         for idx, cls in enumerate(model.cls_recipe):
@@ -208,6 +207,8 @@ def run(args):
 def main(argv):
 
     parser = argparse.ArgumentParser(description="PyTorch ACoL Example")
+    parser.add_argument("--input-path", type=str, default='../input/', metavar='N',
+                        help='dataset path (default: "../input/")')
     parser.add_argument("--batch-size", type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument("--epochs", type=int, default=10, metavar='N',
